@@ -29,9 +29,6 @@ jobs:
         with:
           fetch-depth: 0  # Full history for context file tracking
       
-      - name: Set up GitHub CLI
-        uses: cli/cli@gh-cli/actions/setup-cli@v2
-      
       - name: Configure GitHub CLI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
