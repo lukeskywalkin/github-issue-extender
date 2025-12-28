@@ -5,10 +5,11 @@ A GitHub Actions workflow that uses AI to analyze and elaborate on issues by exa
 ## Features
 
 - 🤖 **AI-Powered Analysis**: Uses configurable AI providers (OpenAI, Anthropic) to analyze issues
-- 📝 **Smart Context Gathering**: Analyzes issues, linked PRs, and relevant code files
+- 📝 **Non-AI Mode**: Optional mode that formats existing issue/PR information without AI (no API keys needed!)
+- 🔍 **Smart Context Gathering**: Analyzes issues, linked PRs, and relevant code files
 - 💾 **Context Persistence**: Maintains repository overview between runs to avoid re-analyzing everything
 - 🎯 **Duplicate Prevention**: Only processes issues that haven't been commented on by the bot
-- 🔧 **Configurable**: Supports multiple AI providers and models
+- 🔧 **Configurable**: Supports multiple AI providers and models, or run without AI
 - 📊 **Size Management**: Enforces size limits on context files to prevent bloat
 
 ## How It Works
@@ -36,11 +37,13 @@ cp -r github-issue-extender/scripts ./
 
 **Important**: The scripts should be placed in the `scripts/` directory at the root of your repository. The workflow file expects scripts to be at `scripts/analyze-issues.sh` relative to the repository root.
 
-### 2. Configure GitHub Secrets
+### 2. Configure GitHub Secrets (Optional - only needed for AI mode)
 
-Add the following secret to your repository:
+**For AI Mode:** Add the following secret to your repository:
 
-- **`AI_API_KEY`** (required): Your API key for the AI provider (OpenAI or Anthropic)
+- **`AI_API_KEY`** (required for AI mode): Your API key for the AI provider (OpenAI or Anthropic)
+
+**For Non-AI Mode:** No secrets needed! Just set `use_ai: false` when triggering the workflow.
 
 You can add secrets in your repository settings: `Settings > Secrets and variables > Actions > New repository secret`
 
@@ -51,6 +54,7 @@ Edit `.github/workflows/issue-extender.yml` to customize:
 - **Schedule**: Change the cron expression in the `schedule` section (default: daily at midnight UTC)
 - **AI Provider**: Set default provider in workflow inputs (default: `openai`)
 - **AI Model**: Set default model (uses provider defaults if not specified)
+- **Use AI Mode**: Set `use_ai: false` to use non-AI summary mode (no API keys needed)
 
 ### 4. Update Script Paths
 
@@ -60,9 +64,10 @@ If you copied the scripts to a different location, update the script paths in `a
 
 ### Environment Variables
 
-- `AI_API_KEY` (required): API key for AI provider
-- `AI_PROVIDER` (optional, default: `openai`): AI provider (`openai` or `anthropic`)
-- `AI_MODEL` (optional): Model name (uses provider defaults if not specified)
+- `AI_API_KEY` (required for AI mode): API key for AI provider
+- `USE_AI` (optional, default: `true`): Set to `false` to use non-AI summary mode (no API keys needed)
+- `AI_PROVIDER` (optional, default: `openai`): AI provider (`openai` or `anthropic`) - only used when `USE_AI=true`
+- `AI_MODEL` (optional): Model name (uses provider defaults if not specified) - only used when `USE_AI=true`
 - `CONTEXT_FILE` (optional, default: `.github/issue-extender-context.json`): Path to context file
 - `CONTEXT_SIZE_LIMIT` (optional, default: `51200`): Maximum context file size in bytes (50KB)
 
@@ -70,8 +75,9 @@ If you copied the scripts to a different location, update the script paths in `a
 
 When triggering the workflow manually, you can specify:
 
-- `ai_provider`: AI provider to use (`openai` or `anthropic`)
-- `ai_model`: Specific model to use (optional)
+- `ai_provider`: AI provider to use (`openai` or `anthropic`) - only used when `use_ai=true`
+- `ai_model`: Specific model to use (optional) - only used when `use_ai=true`
+- `use_ai`: Set to `false` to use non-AI summary mode (default: `true`)
 
 ## Supported AI Providers
 
@@ -116,8 +122,25 @@ The workflow runs automatically on the schedule defined in the workflow file (de
 2. Click on the "Actions" tab
 3. Select "Issue Extender" workflow
 4. Click "Run workflow"
-5. Optionally select AI provider and model
+5. Configure options:
+   - Set `use_ai` to `false` for non-AI mode (no API keys needed!)
+   - Or set `use_ai` to `true` and select AI provider/model (requires `AI_API_KEY` secret)
 6. Click "Run workflow" button
+
+### Non-AI Mode (No API Keys Needed!)
+
+To use the tool without any AI/API keys:
+
+1. When manually triggering: Set `use_ai` input to `false`
+2. Or set the `USE_AI` environment variable to `false` in your workflow
+
+Non-AI mode will:
+- Extract and format information from linked PRs
+- List relevant files and changes
+- Summarize issue labels and metadata
+- Provide structured context without AI analysis
+
+This is perfect for testing or if you don't have API keys!
 
 ## How It Identifies Processed Issues
 

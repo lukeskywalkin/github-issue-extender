@@ -14,6 +14,10 @@ on:
         description: 'AI Model name (optional, uses provider default if not specified)'
         required: false
         default: ''
+      use_ai:
+        description: 'Use AI mode (true) or non-AI summary mode (false)'
+        required: false
+        default: 'true'
 
 jobs:
   extend-issues:
@@ -45,7 +49,7 @@ jobs:
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
           AI_PROVIDER: ${{ github.event.inputs.ai_provider || 'openai' }}
           AI_MODEL: ${{ github.event.inputs.ai_model || '' }}
-          USE_AI: ${{ vars.USE_AI || 'true' }}
+          USE_AI: ${{ github.event.inputs.use_ai || 'true' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
