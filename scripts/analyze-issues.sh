@@ -28,8 +28,8 @@ if [ -z "$REPO" ]; then
     exit 1
 fi
 
-# Get script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get script directory - allow override for reusable workflow
+SCRIPT_DIR="${SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 
 # Ensure context file directory exists
 mkdir -p "$(dirname "$CONTEXT_FILE")"

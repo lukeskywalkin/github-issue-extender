@@ -52,10 +52,18 @@ jobs:
       pull-requests: read
     
     steps:
-      - name: Checkout repository
+      - name: Checkout calling repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Full history for context file tracking
+      
+      - name: Checkout scripts from workflow repository
+        uses: actions/checkout@v4
+        with:
+          repository: lukeskywalkin/github-issue-extender
+          path: issue-extender-scripts
+          sparse-checkout: |
+            scripts/
       
       - name: Configure GitHub CLI
         env:
@@ -65,16 +73,8 @@ jobs:
       
       - name: Make scripts executable
         run: |
-          chmod +x scripts/*.sh
-          chmod +x scripts/ai-providers/*.sh
-      
-      - name: Checkout scripts from this repository
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository }}
-          path: issue-extender-scripts
-          sparse-checkout: |
-            scripts/
+          chmod +x issue-extender-scripts/scripts/*.sh
+          chmod +x issue-extender-scripts/scripts/ai-providers/*.sh
       
       - name: Run Issue Extender
         env:
@@ -86,9 +86,9 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
-          # Copy scripts to workspace root for execution
-          cp -r issue-extender-scripts/scripts ./
-          bash scripts/analyze-issues.sh
+          # Use scripts from workflow repository
+          export SCRIPT_DIR="$PWD/issue-extender-scripts/scripts"
+          bash "$SCRIPT_DIR/analyze-issues.sh"
       
       - name: Commit context file if changed
         env:
