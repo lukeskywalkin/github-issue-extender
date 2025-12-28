@@ -45,6 +45,7 @@ jobs:
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
           AI_PROVIDER: ${{ github.event.inputs.ai_provider || 'openai' }}
           AI_MODEL: ${{ github.event.inputs.ai_model || '' }}
+          USE_AI: ${{ vars.USE_AI || 'true' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
