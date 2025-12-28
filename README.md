@@ -44,6 +44,10 @@ on:
 
 jobs:
   extend-issues:
+    # Required permissions (automatically inherited from reusable workflow):
+    # - contents: write  (to commit context file updates)
+    # - issues: write    (to post comments on issues)
+    # - pull-requests: read (to read PR information)
     uses: lukeskywalkin/github-issue-extender/.github/workflows/issue-extender.yml@main
     with:
       ai_provider: 'groq'  # or 'openai', 'anthropic'
@@ -51,6 +55,13 @@ jobs:
     secrets:
       ai_api_key: ${{ secrets.AI_API_KEY }}  # Only needed if use_ai=true
 ```
+
+**Note on Permissions:** The reusable workflow automatically requests the necessary permissions:
+- `contents: write` - to commit the context file back to the repository
+- `issues: write` - to post comments on issues
+- `pull-requests: read` - to read pull request information
+
+No additional permission configuration is needed! The `GITHUB_TOKEN` will automatically have these permissions.
 
 2. **Add the AI API key secret** (if using AI mode):
    - Go to your repository → Settings → Secrets and variables → Actions

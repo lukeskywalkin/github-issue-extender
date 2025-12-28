@@ -20,6 +20,8 @@ on:
 
 jobs:
   extend-issues:
+    # Permissions are automatically inherited from the reusable workflow
+    # Required permissions: contents: write, issues: write, pull-requests: read
     uses: lukeskywalkin/github-issue-extender/.github/workflows/issue-extender.yml@main
     with:
       ai_provider: ${{ github.event.inputs.ai_provider || 'groq' }}
