@@ -162,7 +162,20 @@ The workflow checks if the bot user (typically `github-actions[bot]` or `GITHUB_
 - GitHub Actions enabled on your repository
 - GitHub CLI (`gh`) available in the workflow environment (automatically installed)
 - `jq` for JSON processing (available in GitHub Actions Ubuntu runner)
-- Valid AI API key stored as a GitHub secret
+- Valid AI API key stored as a GitHub secret (only if using AI mode)
+
+## Security
+
+This workflow uses `GITHUB_TOKEN`, which is automatically provided by GitHub Actions. This is secure and appropriate because:
+
+- **Automatically scoped**: Only has access to the repository where the workflow runs
+- **Short-lived**: Expires immediately after the workflow completes
+- **No secrets to manage**: Automatically available, no setup needed
+- **Explicit permissions**: The workflow declares exactly what it needs (`contents: write`, `issues: write`, `pull-requests: read`)
+
+For more details, see [SECURITY.md](docs/SECURITY.md).
+
+**Note**: For reusable actions used across multiple repositories, consider using GitHub Apps instead.
 
 ## Troubleshooting
 
