@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       ai_provider:
-        description: 'AI Provider (openai, anthropic)'
+        description: 'AI Provider (openai, anthropic, groq)'
         required: false
         default: 'openai'
       ai_model:

@@ -86,12 +86,23 @@ When triggering the workflow manually, you can specify:
 - Default model: `gpt-4o-mini`
 - API endpoint: `https://api.openai.com/v1/chat/completions`
 - Required secret: `AI_API_KEY` (OpenAI API key)
+- Pricing: Pay-per-use
 
 ### Anthropic (Claude)
 
 - Default model: `claude-3-5-sonnet-20241022`
 - API endpoint: `https://api.anthropic.com/v1/messages`
 - Required secret: `AI_API_KEY` (Anthropic API key)
+- Pricing: Pay-per-use
+
+### Groq (Fast Inference - Free Tier Available!)
+
+- Default model: `llama-3.1-70b-versatile`
+- API endpoint: `https://api.groq.com/openai/v1/chat/completions`
+- Required secret: `AI_API_KEY` (Groq API key)
+- **Free tier available!** Get API key at [console.groq.com](https://console.groq.com/)
+- Pricing: Free tier with generous limits, pay-per-use after
+- Note: Groq is very fast! Uses OpenAI-compatible API format
 
 ## Context File
 
