@@ -110,6 +110,9 @@ EOF
         anthropic)
             ai_response=$("$SCRIPT_DIR/ai-providers/anthropic.sh" "$AI_API_KEY" "${AI_MODEL:-}" "$prompt")
             ;;
+        groq)
+            ai_response=$("$SCRIPT_DIR/ai-providers/groq.sh" "$AI_API_KEY" "${AI_MODEL:-}" "$prompt")
+            ;;
         *)
             echo "Error: Unknown AI provider: $AI_PROVIDER" >&2
             exit 1
@@ -228,6 +231,9 @@ process_issue() {
                 ;;
             anthropic)
                 elaboration=$("$SCRIPT_DIR/ai-providers/anthropic.sh" "$AI_API_KEY" "${AI_MODEL:-}" "$prompt")
+                ;;
+            groq)
+                elaboration=$("$SCRIPT_DIR/ai-providers/groq.sh" "$AI_API_KEY" "${AI_MODEL:-}" "$prompt")
                 ;;
             *)
                 echo "Error: Unknown AI provider: $AI_PROVIDER" >&2
