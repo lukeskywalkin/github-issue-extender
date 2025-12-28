@@ -64,6 +64,7 @@ jobs:
           path: issue-extender-scripts
           sparse-checkout: |
             scripts/
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Configure GitHub CLI
         env:
@@ -85,9 +86,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
+          SCRIPT_DIR: ${{ github.workspace }}/issue-extender-scripts/scripts
         run: |
-          # Use scripts from workflow repository
-          export SCRIPT_DIR="$PWD/issue-extender-scripts/scripts"
           bash "$SCRIPT_DIR/analyze-issues.sh"
       
       - name: Commit context file if changed
