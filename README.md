@@ -1,6 +1,8 @@
 # GitHub Issue Extender
 
-A GitHub Actions workflow that uses AI to analyze and elaborate on issues by examining code, pull requests, and repository context. The workflow automatically comments on issues with detailed elaborations to help developers better understand and address them.
+A **reusable** GitHub Actions workflow that uses AI to analyze and elaborate on issues by examining code, pull requests, and repository context. The workflow automatically comments on issues with detailed elaborations to help developers better understand and address them.
+
+**Use it in any repository** by calling it as a reusable workflow - no need to copy files!
 
 ## Features
 
@@ -24,9 +26,41 @@ A GitHub Actions workflow that uses AI to analyze and elaborate on issues by exa
 
 ## Setup
 
-### 1. Add the Workflow and Scripts
+### Option 1: Use as Reusable Workflow (Recommended)
 
-Copy the workflow file and scripts directory to your repository:
+This is the easiest way - just call the workflow from your repository!
+
+1. **Create a workflow file** in your repository:
+
+```yaml
+# .github/workflows/issue-extender.yml
+name: Issue Extender
+
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # Allow manual triggers
+
+jobs:
+  extend-issues:
+    uses: lukeskywalkin/github-issue-extender/.github/workflows/issue-extender.yml@main
+    with:
+      ai_provider: 'groq'  # or 'openai', 'anthropic'
+      use_ai: 'true'       # or 'false' for non-AI mode
+    secrets:
+      ai_api_key: ${{ secrets.AI_API_KEY }}  # Only needed if use_ai=true
+```
+
+2. **Add the AI API key secret** (if using AI mode):
+   - Go to your repository → Settings → Secrets and variables → Actions
+   - Add secret: `AI_API_KEY` with your API key
+
+That's it! The workflow will automatically use the scripts from this repository.
+
+### Option 2: Copy Files Locally (Alternative)
+
+If you prefer to have the scripts in your repository:
 
 ```bash
 # From your repository root
@@ -35,7 +69,7 @@ cp github-issue-extender/.github/workflows/issue-extender.yml .github/workflows/
 cp -r github-issue-extender/scripts ./
 ```
 
-**Important**: The scripts should be placed in the `scripts/` directory at the root of your repository. The workflow file expects scripts to be at `scripts/analyze-issues.sh` relative to the repository root.
+**Important**: The scripts should be placed in the `scripts/` directory at the root of your repository.
 
 ### 2. Configure GitHub Secrets (Optional - only needed for AI mode)
 
@@ -166,16 +200,21 @@ The workflow checks if the bot user (typically `github-actions[bot]` or `GITHUB_
 
 ## Security
 
-This workflow uses `GITHUB_TOKEN`, which is automatically provided by GitHub Actions. This is secure and appropriate because:
+This reusable workflow uses `GITHUB_TOKEN` from the **calling repository**, which is secure because:
 
-- **Automatically scoped**: Only has access to the repository where the workflow runs
+- **Automatically scoped**: Only has access to the repository where the workflow is called
 - **Short-lived**: Expires immediately after the workflow completes
 - **No secrets to manage**: Automatically available, no setup needed
 - **Explicit permissions**: The workflow declares exactly what it needs (`contents: write`, `issues: write`, `pull-requests: read`)
 
+**Important for Reusable Workflows:**
+- The `GITHUB_TOKEN` used is from the **calling repository**, not the workflow repository
+- This means the workflow can only access the repository that calls it
+- This is the recommended approach for reusable workflows
+
 For more details, see [SECURITY.md](docs/SECURITY.md).
 
-**Note**: For reusable actions used across multiple repositories, consider using GitHub Apps instead.
+**Note**: For production services or more complex scenarios, consider using GitHub Apps for enhanced security and audit trails.
 
 ## Troubleshooting
 

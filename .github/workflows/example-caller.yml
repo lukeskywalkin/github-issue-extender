@@ -1,0 +1,29 @@
+# Example: How to use Issue Extender as a reusable workflow
+# Copy this to your repository's .github/workflows/ directory
+
+name: Issue Extender
+
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # Allow manual triggers
+    inputs:
+      ai_provider:
+        description: 'AI Provider (openai, anthropic, groq)'
+        required: false
+        default: 'groq'
+      use_ai:
+        description: 'Use AI mode (true) or non-AI summary mode (false)'
+        required: false
+        default: 'true'
+
+jobs:
+  extend-issues:
+    uses: lukeskywalkin/github-issue-extender/.github/workflows/issue-extender.yml@main
+    with:
+      ai_provider: ${{ github.event.inputs.ai_provider || 'groq' }}
+      use_ai: ${{ github.event.inputs.use_ai || 'true' }}
+    secrets:
+      ai_api_key: ${{ secrets.AI_API_KEY }}  # Only needed if use_ai=true
+
