@@ -171,7 +171,7 @@ main() {
         update)
             local issue_num="$2"
             local new_overview="$3"
-            update_context_issue "$issue_num" "$new_overview"
+            update_context_in_issue "$issue_num" "$new_overview"
             ;;
         *)
             echo "Usage: $0 {get_issue|read <issue_num>|write <issue_num> <json>|update <issue_num> <json>}" >&2

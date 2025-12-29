@@ -135,8 +135,16 @@ update_context_issue() {
         init_context_issue
     fi
     
+    # Call the context manager script to update the issue
     "$SCRIPT_DIR/context-manager.sh" update "$CONTEXT_ISSUE_NUM" "$new_overview"
-    echo "Updated context issue #$CONTEXT_ISSUE_NUM"
+    local exit_code=$?
+    
+    if [ $exit_code -eq 0 ]; then
+        echo "Updated context issue #$CONTEXT_ISSUE_NUM"
+    else
+        echo "Warning: Failed to update context issue #$CONTEXT_ISSUE_NUM" >&2
+        return 1
+    fi
 }
 
 # Build AI prompt for issue analysis

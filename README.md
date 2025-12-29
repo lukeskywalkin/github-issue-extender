@@ -57,9 +57,10 @@ jobs:
 ```
 
 **Note on Permissions:** The reusable workflow automatically requests the necessary permissions:
-- `contents: write` - to commit the context file back to the repository
-- `issues: write` - to post comments on issues
+- `issues: write` - to post comments on issues and store context in a special issue
 - `pull-requests: read` - to read pull request information
+
+**No `contents: write` needed!** The context is stored in a GitHub issue (labeled `issue-extender-context`) instead of committing files, making it more secure.
 
 No additional permission configuration is needed! The `GITHUB_TOKEN` will automatically have these permissions.
 

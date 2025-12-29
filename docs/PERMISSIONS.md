@@ -8,30 +8,21 @@ The workflow declares these permissions in the reusable workflow file:
 
 ```yaml
 permissions:
-  contents: write    # Required to commit context file updates
-  issues: write      # Required to post comments on issues
+  issues: write      # Required to post comments on issues and store context
   pull-requests: read # Required to read pull request information
 ```
-
-### contents: write
-
-**Why it's needed:**
-- The workflow commits the context file (`.github/issue-extender-context.json`) back to the repository
-- This file stores the repository overview and is updated periodically
-
-**What it allows:**
-- Write access to repository contents
-- Ability to create commits and push to the repository
 
 ### issues: write
 
 **Why it's needed:**
 - The workflow posts comments on issues with AI-generated elaborations
+- The workflow stores repository context in a special issue (labeled `issue-extender-context`)
 - This is the core functionality of the tool
 
 **What it allows:**
 - Create, update, and comment on issues
 - Read issue details and comments
+- Store the repository overview in an issue body (instead of committing files)
 
 ### pull-requests: read
 
@@ -53,13 +44,14 @@ The permissions are declared in the reusable workflow file itself, so GitHub Act
 ## Security Considerations
 
 These permissions follow the **principle of least privilege**:
-- Only `contents: write` is granted (not full repo access)
-- Only `issues: write` is granted (can comment, but limited to issues)
+- Only `issues: write` is granted (can comment and update issues, but limited to issues)
 - Only `pull-requests: read` is granted (read-only, cannot modify PRs)
+- **No `contents: write`** - The workflow does not need to commit files to the repository!
 
 The workflow cannot:
 - Delete files or branches
 - Modify pull requests
+- Commit or push code
 - Access other repositories
 - Perform administrative actions
 
@@ -79,7 +71,6 @@ If you want to override the permissions (not recommended), you can specify them 
 jobs:
   extend-issues:
     permissions:
-      contents: write
       issues: write
       pull-requests: read
     uses: lukeskywalkin/github-issue-extender/.github/workflows/issue-extender.yml@main
@@ -87,4 +78,15 @@ jobs:
 ```
 
 However, this is usually unnecessary as the reusable workflow already declares the correct permissions.
+
+## Context Storage
+
+The workflow stores repository context in a special GitHub issue instead of committing a file. This issue:
+- Has the label `issue-extender-context`
+- Title: "Issue Extender Context"
+- Stores the JSON context in the issue body (in a code block)
+- Is automatically created on first run
+- Is automatically updated when the repository overview changes
+
+This approach eliminates the need for `contents: write` permission, making the workflow more secure!
 
