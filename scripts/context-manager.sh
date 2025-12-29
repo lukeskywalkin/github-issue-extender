@@ -118,7 +118,7 @@ get_repo_overview_from_issue() {
 }
 
 # Update context in issue (called from analyze-issues.sh)
-update_context_issue() {
+update_context_in_issue() {
     local issue_num="$1"
     local new_overview="$2"
     local repo="${GITHUB_REPOSITORY}"
