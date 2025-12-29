@@ -28,4 +28,5 @@ jobs:
       use_ai: ${{ github.event.inputs.use_ai || 'true' }}
     secrets:
       ai_api_key: ${{ secrets.AI_API_KEY }}  # Only needed if use_ai=true
+      # github_token: ${{ secrets.GITHUB_TOKEN_PAT }}  # Optional: Use PAT instead of default GITHUB_TOKEN
 

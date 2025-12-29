@@ -23,6 +23,9 @@ on:
       ai_api_key:
         description: 'API key for AI provider (required if use_ai=true)'
         required: false
+      github_token:
+        description: 'GitHub token for API access (optional, defaults to GITHUB_TOKEN)'
+        required: false
   # Direct trigger - for testing in this repository
   workflow_dispatch:
     inputs:
@@ -67,7 +70,7 @@ jobs:
       
       - name: Configure GitHub CLI
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.github_token || secrets.GITHUB_TOKEN }}
         run: |
           echo "$GITHUB_TOKEN" | gh auth login --with-token
       
