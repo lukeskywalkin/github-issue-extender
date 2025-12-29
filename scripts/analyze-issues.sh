@@ -4,12 +4,12 @@
 set -euo pipefail
 
 # Configuration
-CONTEXT_FILE="${CONTEXT_FILE:-.github/issue-extender-context.json}"
 CONTEXT_SIZE_LIMIT="${CONTEXT_SIZE_LIMIT:-51200}"  # 50KB in bytes
 AI_PROVIDER="${AI_PROVIDER:-openai}"
 AI_MODEL="${AI_MODEL:-}"
 REPO="${GITHUB_REPOSITORY}"
 USE_AI="${USE_AI:-true}"  # Set to "false" to use non-AI summary mode
+CONTEXT_ISSUE_NUM=""  # Will be set when we get/create the context issue
 
 # Check if AI mode is enabled
 if [ "$USE_AI" = "true" ] && [ -z "${AI_API_KEY:-}" ]; then
@@ -31,32 +31,23 @@ fi
 # Get script directory - allow override for reusable workflow
 SCRIPT_DIR="${SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 
-# Ensure context file directory exists
-mkdir -p "$(dirname "$CONTEXT_FILE")"
-
-# Initialize context file if it doesn't exist
-init_context_file() {
-    if [ ! -f "$CONTEXT_FILE" ]; then
-        cat > "$CONTEXT_FILE" <<EOF
-{
-  "repository_overview": {
-    "summary": "",
-    "important_files": [],
-    "last_updated": null
-  }
-}
-EOF
-        echo "Initialized context file: $CONTEXT_FILE"
+# Initialize context issue
+init_context_issue() {
+    CONTEXT_ISSUE_NUM=$("$SCRIPT_DIR/context-manager.sh" get_issue)
+    if [ -z "$CONTEXT_ISSUE_NUM" ]; then
+        echo "Error: Failed to initialize context issue" >&2
+        exit 1
     fi
+    echo "Using context issue #$CONTEXT_ISSUE_NUM"
 }
 
-# Get repository overview from context file
+# Get repository overview from context issue
 get_repo_overview() {
-    if [ -f "$CONTEXT_FILE" ]; then
-        cat "$CONTEXT_FILE" | jq -r '.repository_overview // {}'
-    else
-        echo "{}"
+    if [ -z "$CONTEXT_ISSUE_NUM" ]; then
+        init_context_issue
     fi
+    
+    "$SCRIPT_DIR/context-manager.sh" read "$CONTEXT_ISSUE_NUM" | jq -r '.repository_overview // {}'
 }
 
 # Generate or update repository overview using AI
@@ -136,24 +127,16 @@ EOF
     fi
 }
 
-# Update context file with new overview (respecting size limit)
-update_context_file() {
+# Update context issue with new overview (respecting size limit)
+update_context_issue() {
     local new_overview="$1"
     
-    # Update the context file
-    local temp_file=$(mktemp)
-    cat "$CONTEXT_FILE" | jq --argjson overview "$new_overview" '.repository_overview = $overview | .repository_overview.last_updated = (now | todateiso8601)' > "$temp_file"
-    
-    # Check size
-    local file_size=$(wc -c < "$temp_file" | tr -d ' ')
-    if [ "$file_size" -gt "$CONTEXT_SIZE_LIMIT" ]; then
-        # Trim oldest entries from important_files
-        cat "$temp_file" | jq '.repository_overview.important_files = (.repository_overview.important_files | .[0:10])' > "${temp_file}.trimmed"
-        mv "${temp_file}.trimmed" "$temp_file"
+    if [ -z "$CONTEXT_ISSUE_NUM" ]; then
+        init_context_issue
     fi
     
-    mv "$temp_file" "$CONTEXT_FILE"
-    echo "Updated context file: $CONTEXT_FILE"
+    "$SCRIPT_DIR/context-manager.sh" update "$CONTEXT_ISSUE_NUM" "$new_overview"
+    echo "Updated context issue #$CONTEXT_ISSUE_NUM"
 }
 
 # Build AI prompt for issue analysis
@@ -205,7 +188,7 @@ process_issue() {
     echo "Processing issue #$issue_num..."
     
     # Get issue context
-    local issue_context=$("$SCRIPT_DIR/get-issue-context.sh" "$issue_num" "$CONTEXT_FILE")
+    local issue_context=$("$SCRIPT_DIR/get-issue-context.sh" "$issue_num")
     
     # Get repository overview
     local repo_overview=$(get_repo_overview)
@@ -214,7 +197,7 @@ process_issue() {
     if [ -z "$repo_overview" ] || [ "$repo_overview" = "{}" ] || [ "$(echo "$repo_overview" | jq -r '.summary // ""')" = "" ]; then
         echo "Generating initial repository overview..."
         repo_overview=$(generate_repo_overview)
-        update_context_file "$repo_overview"
+        update_context_issue "$repo_overview"
     fi
     
     # Generate elaboration (AI or non-AI mode)
@@ -271,8 +254,8 @@ EOF
 main() {
     echo "Starting issue extender analysis..."
     
-    # Initialize context file
-    init_context_file
+    # Initialize context issue
+    init_context_issue
     
     # Get all open issues
     echo "Fetching open issues..."

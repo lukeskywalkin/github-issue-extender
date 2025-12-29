@@ -4,7 +4,6 @@
 get_issue_context() {
     local issue_num="$1"
     local repo="${GITHUB_REPOSITORY}"
-    local context_file="${2:-.github/issue-extender-context.json}"
     
     if [ -z "$issue_num" ] || [ -z "$repo" ]; then
         echo "Error: issue number and repository are required" >&2
@@ -54,11 +53,8 @@ get_issue_context() {
         pr_files=$(echo "$unique_files" | jq -R '.' | jq -s '.')
     fi
     
-    # Load repository context if available
+    # Repository context is now stored in a separate issue, not needed here
     local repo_context="{}"
-    if [ -f "$context_file" ]; then
-        repo_context=$(cat "$context_file" | jq '.repository_overview // {}')
-    fi
     
     # Build context summary
     local context=$(jq -n \
@@ -103,15 +99,14 @@ get_relevant_code_files() {
 
 main() {
     local issue_num="$1"
-    local context_file="${2:-.github/issue-extender-context.json}"
     
     if [ -z "$issue_num" ]; then
         echo "Error: issue number is required" >&2
-        echo "Usage: $0 <issue_number> [context_file]" >&2
+        echo "Usage: $0 <issue_number>" >&2
         exit 1
     fi
     
-    get_issue_context "$issue_num" "$context_file"
+    get_issue_context "$issue_num"
 }
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then

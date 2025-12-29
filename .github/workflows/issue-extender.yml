@@ -47,7 +47,6 @@ jobs:
   extend-issues:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
       issues: write
       pull-requests: read
     
@@ -90,15 +89,4 @@ jobs:
         run: |
           bash "$SCRIPT_DIR/analyze-issues.sh"
       
-      - name: Commit context file if changed
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -n "$(git status --porcelain .github/issue-extender-context.json)" ]; then
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git add .github/issue-extender-context.json
-            git commit -m "Update issue extender context file"
-            git push
-          fi
 
