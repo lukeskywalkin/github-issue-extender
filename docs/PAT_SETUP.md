@@ -45,15 +45,17 @@ Consider using a PAT if:
 1. Go to your repository on GitHub
 2. Navigate to **Settings** → **Secrets and variables** → **Actions**
 3. Click **"New repository secret"**
-4. Name: `GITHUB_TOKEN_PAT` (or any name you prefer)
+4. Name: `GH_PAT` (or any name you prefer - **cannot start with GITHUB_**)
 5. Value: Paste your PAT
 6. Click **"Add secret"**
 
 Then update the workflow file to use it:
 ```yaml
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_PAT }}
+  GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 ```
+
+**Important:** Secret names cannot start with `GITHUB_`. Use names like `GH_PAT`, `PAT_TOKEN`, or `GH_TOKEN` instead.
 
 ### For Reusable Workflow (Calling from Other Repositories)
 
@@ -62,7 +64,7 @@ If you're calling this workflow from another repository:
 1. **Add PAT as a secret in the calling repository:**
    - Go to the repository where you'll call the workflow
    - Settings → Secrets and variables → Actions
-   - Add secret: `GITHUB_TOKEN_PAT` (or any name)
+   - Add secret: `GH_PAT` (or any name - **cannot start with GITHUB_**)
 
 2. **Pass it to the reusable workflow:**
 ```yaml
@@ -74,8 +76,10 @@ jobs:
       use_ai: 'true'
     secrets:
       ai_api_key: ${{ secrets.AI_API_KEY }}
-      github_token: ${{ secrets.GITHUB_TOKEN_PAT }}  # Optional: Use PAT instead of GITHUB_TOKEN
+      github_token: ${{ secrets.GH_PAT }}  # Optional: Use PAT instead of GITHUB_TOKEN
 ```
+
+**Note:** GitHub doesn't allow secret names starting with `GITHUB_`. Use names like `GH_PAT`, `PAT_TOKEN`, or `GH_TOKEN`.
 
 **Note:** If you don't provide `github_token`, the workflow will use the default `GITHUB_TOKEN` automatically.
 
