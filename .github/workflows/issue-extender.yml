@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Full history for context file tracking
-          token: ${{ secrets.pat_token || secrets.GITHUB_TOKEN }}
+          # Don't specify token here - uses calling repository's GITHUB_TOKEN automatically
       
       - name: Checkout scripts from workflow repository
         uses: actions/checkout@v4
