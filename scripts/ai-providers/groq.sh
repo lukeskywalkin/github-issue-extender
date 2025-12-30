@@ -62,3 +62,4 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     call_groq_api "$@"
 fi
 
+

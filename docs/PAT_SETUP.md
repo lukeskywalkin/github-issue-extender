@@ -76,7 +76,7 @@ jobs:
       use_ai: 'true'
     secrets:
       ai_api_key: ${{ secrets.AI_API_KEY }}
-      github_token: ${{ secrets.GH_PAT }}  # Optional: Use PAT instead of GITHUB_TOKEN
+      pat_token: ${{ secrets.GH_PAT }}  # Optional: Use PAT instead of GITHUB_TOKEN
 ```
 
 **Note:** GitHub doesn't allow secret names starting with `GITHUB_`. Use names like `GH_PAT`, `PAT_TOKEN`, or `GH_TOKEN`.

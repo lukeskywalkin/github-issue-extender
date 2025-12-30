@@ -78,3 +78,4 @@ For the GitHub Issue Extender workflow (single-repository tool), `GITHUB_TOKEN` 
 
 If you're extending this tool to work across multiple repositories or as a reusable action, then consider implementing GitHub App authentication instead.
 
+

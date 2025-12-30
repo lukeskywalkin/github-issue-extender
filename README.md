@@ -71,7 +71,7 @@ No additional permission configuration is needed! The `GITHUB_TOKEN` will automa
 3. **(Optional) Use a Personal Access Token:**
    - If you want to use a fine-grained PAT instead of the default `GITHUB_TOKEN`, add it as a secret
    - See [PAT Setup Guide](docs/PAT_SETUP.md) for detailed instructions
-   - Pass it via `secrets.github_token` in the workflow call
+   - Pass it via `secrets.pat_token` in the workflow call
 
 That's it! The workflow will automatically use the scripts from this repository.
 

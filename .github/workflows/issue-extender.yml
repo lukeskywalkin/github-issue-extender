@@ -23,8 +23,8 @@ on:
       ai_api_key:
         description: 'API key for AI provider (required if use_ai=true)'
         required: false
-      github_token:
-        description: 'GitHub token for API access (optional, defaults to GITHUB_TOKEN)'
+      pat_token:
+        description: 'Personal Access Token for API access (optional, defaults to GITHUB_TOKEN)'
         required: false
   # Direct trigger - for testing in this repository
   workflow_dispatch:
@@ -66,11 +66,11 @@ jobs:
           path: issue-extender-scripts
           sparse-checkout: |
             scripts/
-          token: ${{ secrets.github_token || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.pat_token || secrets.GITHUB_TOKEN }}
       
       - name: Configure GitHub CLI
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.pat_token || secrets.GITHUB_TOKEN }}
         run: |
           echo "$GITHUB_TOKEN" | gh auth login --with-token
       
@@ -85,7 +85,7 @@ jobs:
           AI_PROVIDER: ${{ inputs.ai_provider || github.event.inputs.ai_provider || 'openai' }}
           AI_MODEL: ${{ inputs.ai_model || github.event.inputs.ai_model || '' }}
           USE_AI: ${{ inputs.use_ai || github.event.inputs.use_ai || 'true' }}
-          GITHUB_TOKEN: ${{ secrets.github_token || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.pat_token || secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
           SCRIPT_DIR: ${{ github.workspace }}/issue-extender-scripts/scripts
